@@ -133,23 +133,127 @@ Backlog -> Todo -> In-Progress -> Review -> Done
 
 ## 설치
 
-```bash
-# 저장소 클론
-git clone https://github.com/ryu/claude-team.git
-cd claude-team
+### 사전 요구사항
 
-# 의존성 설치
+| 요구사항 | 버전 | 비고 |
+|---------|------|------|
+| [Node.js](https://nodejs.org) | >= 20.0.0 | LTS 권장 |
+| [Claude Code CLI](https://docs.anthropic.com/claude-code) | latest | `npm install -g @anthropic-ai/claude-code` |
+| [oh-my-claudecode](https://github.com/mataleao/oh-my-claudecode) | >= 4.x | `/ask codex` 지원을 위한 선택사항 |
+
+### 1단계 — 클론 및 빌드
+
+```bash
+git clone https://github.com/inhyoe/Claude-team.git
+cd Claude-team
+
+# 의존성 설치 (better-sqlite3, @modelcontextprotocol/sdk 포함)
 npm install
 
-# 빌드
+# TypeScript 컴파일 + MCP 브릿지 번들
 npm run build
 ```
 
-### 요구사항
+### 2단계 — MCP 브릿지 등록
+
+Claude Team은 MCP 서버를 통해 Claude Code에 23개의 도구를 제공합니다. 전역 또는 프로젝트별로 등록할 수 있습니다.
+
+**전역 등록** (모든 프로젝트에서 사용 가능):
+
+```bash
+claude mcp add claude-team node /절대경로/Claude-team/bridge/ct-bridge.bundled.cjs
+```
+
+**프로젝트별 등록** (프로젝트 루트의 `.mcp.json` — 이 저장소에 이미 포함):
+
+```json
+{
+  "mcpServers": {
+    "claude-team": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/절대경로/Claude-team/bridge/ct-bridge.bundled.cjs"]
+    }
+  }
+}
+```
+
+브릿지가 정상 감지되는지 확인:
+
+```
+/ct-setup
+```
+
+### 3단계 — 스킬 등록
+
+스킬은 사용자가 호출할 수 있는 `/ct-*` 명령어입니다. oh-my-claudecode로 등록합니다:
+
+```bash
+# Claude-team 디렉토리에서 실행
+omc skill add ./skills/ct-team
+omc skill add ./skills/ct-sprint
+omc skill add ./skills/ct-kanban
+omc skill add ./skills/ct-review
+omc skill add ./skills/ct-setup
+```
+
+또는 스킬 파일을 `~/.claude/skills/` 디렉토리에 직접 복사해도 됩니다.
+
+### 4단계 — 최초 설정
+
+Claude Team을 사용할 프로젝트에서 실행:
+
+```bash
+/ct-setup
+```
+
+실행 내용:
+1. `better-sqlite3` 설치 여부 확인
+2. 10개 테이블 스키마로 `.omc/state/claude-team.db` 생성
+3. `.omc/artifacts/`, `.omc/state/` 디렉토리 생성
+4. MCP 브릿지 연결 확인 (23개 도구)
+5. Codex / Gemini 프로바이더 사용 가능 여부 확인
+6. 프로젝트 등록 및 역할 구성 표시
+
+### 구성 옵션
+
+Claude Team은 `/ct-setup`이 자동 생성하는 `.omc/ct-config.json`을 읽습니다:
+
+```json
+{
+  "maxAgents": 4,
+  "defaultComplexity": "medium",
+  "providers": {
+    "codex": true,
+    "gemini": false
+  },
+  "qualityGates": {
+    "enabled": true,
+    "minScore": 7.0,
+    "maxRetries": 3
+  },
+  "kanban": {
+    "requireGateForDone": true
+  }
+}
+```
+
+| 옵션 | 기본값 | 설명 |
+|------|--------|------|
+| `maxAgents` | `4` | 파이프라인당 최대 동시 에이전트 수 |
+| `defaultComplexity` | `"medium"` | 자동 감지를 건너뛸 때의 기본 복잡도 |
+| `providers.codex` | `true` | QA/Security/DevOps/DBA 역할에 Codex 활성화 |
+| `providers.gemini` | `false` | UI/UX 및 대용량 컨텍스트 작업에 Gemini 활성화 |
+| `qualityGates.minScore` | `7.0` | 리뷰 게이트 통과 최소 종합 점수 |
+| `qualityGates.maxRetries` | `3` | PL 에스컬레이션 전 최대 리뷰 시도 횟수 |
+| `kanban.requireGateForDone` | `true` | Done 이동 전 품질 게이트 통과 필수 여부 |
+
+### 요구사항 요약
 
 - Node.js >= 20.0.0
 - Claude Code CLI
-- `better-sqlite3` (자동 설치)
+- `better-sqlite3` (`npm install`로 자동 설치)
+- `@modelcontextprotocol/sdk` (자동 설치)
 
 ## 사용법
 

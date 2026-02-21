@@ -133,23 +133,127 @@ When multiple reviewers score the same task:
 
 ## Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/ryu/claude-team.git
-cd claude-team
+### Prerequisites
 
-# Install dependencies
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| [Node.js](https://nodejs.org) | >= 20.0.0 | LTS recommended |
+| [Claude Code CLI](https://docs.anthropic.com/claude-code) | latest | `npm install -g @anthropic-ai/claude-code` |
+| [oh-my-claudecode](https://github.com/mataleao/oh-my-claudecode) | >= 4.x | Optional but recommended for `/ask codex` support |
+
+### Step 1 — Clone & Build
+
+```bash
+git clone https://github.com/inhyoe/Claude-team.git
+cd Claude-team
+
+# Install dependencies (includes better-sqlite3, @modelcontextprotocol/sdk)
 npm install
 
-# Build
+# Compile TypeScript + bundle MCP bridge
 npm run build
 ```
 
-### Requirements
+### Step 2 — Register the MCP Bridge
+
+Claude Team exposes 23 tools to Claude Code via an MCP server. Register it globally or per-project.
+
+**Global registration** (available in all projects):
+
+```bash
+claude mcp add claude-team node /absolute/path/to/Claude-team/bridge/ct-bridge.bundled.cjs
+```
+
+**Project-local registration** (`.mcp.json` in project root — already included in this repo):
+
+```json
+{
+  "mcpServers": {
+    "claude-team": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/absolute/path/to/Claude-team/bridge/ct-bridge.bundled.cjs"]
+    }
+  }
+}
+```
+
+Verify the bridge is detected:
+
+```
+/ct-setup
+```
+
+### Step 3 — Register Skills
+
+Skills are the user-invocable `/ct-*` commands. Register them with oh-my-claudecode:
+
+```bash
+# From the Claude-team directory
+omc skill add ./skills/ct-team
+omc skill add ./skills/ct-sprint
+omc skill add ./skills/ct-kanban
+omc skill add ./skills/ct-review
+omc skill add ./skills/ct-setup
+```
+
+Or manually copy skill files into your `~/.claude/skills/` directory.
+
+### Step 4 — First-Time Setup
+
+In any project where you want to use Claude Team, run:
+
+```bash
+/ct-setup
+```
+
+This will:
+1. Check `better-sqlite3` is available
+2. Create `.omc/state/claude-team.db` with the 10-table schema
+3. Create `.omc/artifacts/` and `.omc/state/` directories
+4. Verify MCP bridge connectivity (23 tools)
+5. Check Codex / Gemini provider availability
+6. Register the project and display role configuration
+
+### Configuration
+
+Claude Team reads `.omc/ct-config.json` (auto-created by `/ct-setup`):
+
+```json
+{
+  "maxAgents": 4,
+  "defaultComplexity": "medium",
+  "providers": {
+    "codex": true,
+    "gemini": false
+  },
+  "qualityGates": {
+    "enabled": true,
+    "minScore": 7.0,
+    "maxRetries": 3
+  },
+  "kanban": {
+    "requireGateForDone": true
+  }
+}
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `maxAgents` | `4` | Maximum concurrent agents per pipeline |
+| `defaultComplexity` | `"medium"` | Fallback complexity when auto-detection is skipped |
+| `providers.codex` | `true` | Enable Codex for QA/Security/DevOps/DBA roles |
+| `providers.gemini` | `false` | Enable Gemini for UI/UX and large-context tasks |
+| `qualityGates.minScore` | `7.0` | Minimum overall score to pass a review gate |
+| `qualityGates.maxRetries` | `3` | Max review attempts before escalation to PL |
+| `kanban.requireGateForDone` | `true` | Require quality gate pass before moving to Done |
+
+### Requirements Summary
 
 - Node.js >= 20.0.0
 - Claude Code CLI
-- `better-sqlite3` (installed automatically)
+- `better-sqlite3` (installed automatically via `npm install`)
+- `@modelcontextprotocol/sdk` (installed automatically)
 
 ## Usage
 
