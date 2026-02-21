@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-team/schemas/status-report.json",
+  "title": "StatusReportPayload",
+  "description": "Message payload for reporting task status and progress",
+  "type": "object",
+  "required": ["taskId", "status", "progress", "summary"],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "description": "Unique identifier for the task being reported on"
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the task",
+      "enum": ["started", "in-progress", "completed", "blocked", "failed"]
+    },
+    "progress": {
+      "type": "number",
+      "description": "Progress percentage (0-100)",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief summary of current state or recent changes"
+    },
+    "filesModified": {
+      "type": "array",
+      "description": "List of files modified during this work session",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockerDescription": {
+      "type": "string",
+      "description": "Description of what is blocking progress (required when status=blocked)"
+    }
+  },
+  "additionalProperties": false
+}

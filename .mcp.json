@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "claude-team": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["bridge/ct-bridge.bundled.cjs"],
+      "env": {
+        "CT_PROJECT_ROOT": "."
+      }
+    }
+  }
+}

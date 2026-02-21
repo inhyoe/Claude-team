@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-team/schemas/review-request.json",
+  "title": "ReviewRequestPayload",
+  "description": "Message payload for requesting a review from QA/Security/PL",
+  "type": "object",
+  "required": ["taskId", "artifactPath", "artifactType", "reviewType", "changedFiles", "description"],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "description": "Unique identifier for the task being reviewed"
+    },
+    "artifactPath": {
+      "type": "string",
+      "description": "Path to the artifact or code being reviewed"
+    },
+    "artifactType": {
+      "type": "string",
+      "description": "Type of artifact being reviewed",
+      "enum": ["prd", "api-spec", "schema", "review-report", "test-plan", "deploy-config", "security-audit"]
+    },
+    "reviewType": {
+      "type": "string",
+      "description": "Type of review requested",
+      "enum": ["code-review", "qa-review", "security-review", "design-review"]
+    },
+    "changedFiles": {
+      "type": "array",
+      "description": "List of files changed in this review",
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of changes and context for the reviewer"
+    }
+  },
+  "additionalProperties": false
+}

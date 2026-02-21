@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-team/schemas/artifact-handoff.json",
+  "title": "ArtifactHandoffPayload",
+  "description": "Message payload for transferring artifacts between roles",
+  "type": "object",
+  "required": ["artifactId", "artifactType", "filePath", "producedBy", "consumedBy", "description"],
+  "properties": {
+    "artifactId": {
+      "type": "string",
+      "description": "Unique identifier for the artifact"
+    },
+    "artifactType": {
+      "type": "string",
+      "description": "Type of artifact being handed off",
+      "enum": ["prd", "api-spec", "schema", "review-report", "test-plan", "deploy-config", "security-audit"]
+    },
+    "filePath": {
+      "type": "string",
+      "description": "Path to the artifact file"
+    },
+    "producedBy": {
+      "type": "string",
+      "description": "Role that created the artifact",
+      "enum": ["pm", "pl", "fe-dev", "be-dev", "qa-engineer", "ui-ux-designer", "devops-engineer", "security-specialist", "dba"]
+    },
+    "consumedBy": {
+      "type": "string",
+      "description": "Role that will consume the artifact",
+      "enum": ["pm", "pl", "fe-dev", "be-dev", "qa-engineer", "ui-ux-designer", "devops-engineer", "security-specialist", "dba"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the artifact and how it should be used"
+    }
+  },
+  "additionalProperties": false
+}

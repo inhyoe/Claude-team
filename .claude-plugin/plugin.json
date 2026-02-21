@@ -1,0 +1,23 @@
+{
+  "name": "claude-team",
+  "version": "0.1.0",
+  "description": "Role-based development team simulation plugin for Claude Code",
+  "author": {
+    "name": "claude-team contributors"
+  },
+  "repository": "https://github.com/ryu/claude-team",
+  "homepage": "https://github.com/ryu/claude-team",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "team",
+    "role-based",
+    "kanban",
+    "multi-agent",
+    "orchestration"
+  ],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "mcpServers": "./.mcp.json"
+}

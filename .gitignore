@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.js.map
+*.d.ts.map
+.omc/state/
+.omc/notepad.md
+.omc/project-memory.json
+*.db
+*.db-wal
+*.db-shm
+.DS_Store
+.env

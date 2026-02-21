@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-team/schemas/task-assignment.json",
+  "title": "TaskAssignmentPayload",
+  "description": "Message payload for assigning a task to a role",
+  "type": "object",
+  "required": ["taskId", "subject", "description", "fileOwnership", "priority"],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "description": "Unique identifier for the task"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Brief title of the task"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of what needs to be done"
+    },
+    "fileOwnership": {
+      "type": "array",
+      "description": "List of file paths or glob patterns this task owns",
+      "items": {
+        "type": "string"
+      }
+    },
+    "priority": {
+      "type": "number",
+      "description": "Task priority (1=highest, 5=lowest)",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "sprintId": {
+      "type": "string",
+      "description": "Optional sprint this task belongs to"
+    },
+    "dagNodeId": {
+      "type": "string",
+      "description": "Optional DAG node ID this task corresponds to"
+    }
+  },
+  "additionalProperties": false
+}

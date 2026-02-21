@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-team/schemas/review-result.json",
+  "title": "ReviewResultPayload",
+  "description": "Message payload for delivering review results with scores and feedback",
+  "type": "object",
+  "required": ["taskId", "verdict", "score", "dimensions", "feedback", "attempt", "maxAttempts", "requiresRework"],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "description": "Unique identifier for the task being reviewed"
+    },
+    "verdict": {
+      "type": "string",
+      "description": "Final verdict from the reviewer",
+      "enum": ["pass", "conditional", "reject", "auto-reject"]
+    },
+    "score": {
+      "type": "number",
+      "description": "Overall score (average of dimensions)",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Detailed scoring across quality dimensions",
+      "required": ["correctness", "security", "performance", "maintainability", "test_coverage"],
+      "properties": {
+        "correctness": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "security": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "performance": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "maintainability": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "test_coverage": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10
+        }
+      },
+      "additionalProperties": false
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Detailed feedback from the reviewer"
+    },
+    "attempt": {
+      "type": "number",
+      "description": "Current review attempt number",
+      "minimum": 1
+    },
+    "maxAttempts": {
+      "type": "number",
+      "description": "Maximum allowed review attempts",
+      "minimum": 1
+    },
+    "requiresRework": {
+      "type": "boolean",
+      "description": "Whether the work needs to be redone"
+    },
+    "reworkGuidance": {
+      "type": "string",
+      "description": "Specific guidance on what needs to be fixed (required when requiresRework=true)"
+    }
+  },
+  "additionalProperties": false
+}
